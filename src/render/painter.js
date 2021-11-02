@@ -21,6 +21,7 @@ import {programUniforms} from './program/program_uniforms.js';
 import Context from '../gl/context.js';
 import {fogUniformValues} from '../render/fog.js';
 import DepthMode from '../gl/depth_mode.js';
+import murmur3 from 'murmurhash-js';
 import StencilMode from '../gl/stencil_mode.js';
 import ColorMode from '../gl/color_mode.js';
 import CullFaceMode from '../gl/cull_face_mode.js';
@@ -316,12 +317,24 @@ class Painter {
             clippingMaskUniformValues(this.identityMat),
             '$clipping', this.viewportBuffer,
             this.quadTriangleIndexBuffer, this.viewportSegments);
+
+        this._tileClippingMaskKey = '';
     }
 
     _renderTileClippingMasks(layer: StyleLayer, sourceCache?: SourceCache, tileIDs?: Array<OverscaledTileID>) {
         if (!sourceCache || this.currentStencilSource === sourceCache.id || !layer.isTileClipped() || !tileIDs || !tileIDs.length) return;
 
         this.currentStencilSource = sourceCache.id;
+
+        let clippingMaskKey = '';
+        for (const tileID of tileIDs) {
+            clippingMaskKey = murmur3(clippingMaskKey + tileID.key.toString());
+        }
+
+        if (this._tileClippingMaskKey === clippingMaskKey) {
+            return;
+        }
+        this._tileClippingMaskKey = clippingMaskKey;
 
         const context = this.context;
         const gl = context.gl;
