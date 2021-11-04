@@ -250,7 +250,7 @@ export default {
         // First check if the view frustum is fully covered by the map by casting a ray
         // from the top left/right corner and see if it intersects with the globe. In case
         // of no intersection we need to find distance to the horizon point where the
-        // surface normal is parallel to the camera forward direction.
+        // surface normal is perpendicular to the camera forward direction.
         const cameraDistance = tr.cameraToCenterDistance;
         const centerPixelAltitude = tr._centerAltitude * pixelsPerMeter;
 
