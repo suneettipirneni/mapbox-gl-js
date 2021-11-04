@@ -266,7 +266,7 @@ export default {
 
         const up = vec3.scale([], camera.up(), tanFovAboveCenter);
         const right = vec3.scale([], camera.right(), tanFovAboveCenter * aspectRatio);
-        const dir = vec3.normalize([], vec3.add([], forward, up), right);
+        const dir = vec3.normalize([], vec3.add([], vec3.add([], forward, up), right));
 
         const pointOnGlobe = [];
         const ray = new Ray(cameraPosition, dir);
